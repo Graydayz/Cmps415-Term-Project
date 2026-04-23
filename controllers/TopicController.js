@@ -2,7 +2,7 @@
 const User = require("../models/User");
 const Topic = require("../models/Topic");
 const Message = require("../models/Message");
-const topicNotifier = require("../observers/ITopicObserver");
+const topicNotifier = require("../observers/TopicStatsObserver");
 
 module.exports = {
   async dashboard(req, res) {
@@ -13,20 +13,20 @@ module.exports = {
 
     const topicMessages = {};
     for (const topic of topics) {
-      topicNotifier.notify("TOPIC_VIEWED", { topicId: topic._id }); // T6 + T8
+      topicNotifier.update("TOPIC_VIEWED", { topicId: topic._id }); // FIXED
 
       const messages = await Message.find({ topic: topic._id })
         .sort({ createdAt: -1 })
-        .limit(2); // T2.1
+        .limit(2);
       topicMessages[topic._id] = messages;
     }
 
-    res.render("dashboard", { user, topics, topicMessages }); // T2.1 + T2.2
+    res.render("dashboard", { user, topics, topicMessages });
   },
 
   async listAll(req, res) {
     const topics = await Topic.find({});
-    res.render("topics", { topics }); // link from dashboard → T2.2
+    res.render("topics", { topics });
   },
 
   async create(req, res) {
@@ -37,7 +37,7 @@ module.exports = {
     });
     await User.findByIdAndUpdate(userId, {
       $addToSet: { subscribedTopics: topic._id },
-    }); // T3
+    });
     res.redirect("/dashboard");
   },
 
@@ -59,6 +59,6 @@ module.exports = {
     const topics = await Topic.find({}, "title accessCount").sort({
       accessCount: -1,
     });
-    res.json(topics); // T8
+    res.json(topics);
   },
 };
