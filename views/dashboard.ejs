@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+<div class="container">
 
   <h1>Welcome, <%= user.username %></h1>
 
@@ -15,7 +16,7 @@
   <% } %>
 
   <% topics.forEach(topic => { %>
-    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+    <div class="card">
       <h3><%= topic.title %></h3>
 
       <h4>Recent Messages:</h4>
@@ -40,5 +41,6 @@
 
   <a href="/topics">View all topics</a>
 
+</div>
 </body>
 </html>
